@@ -10,7 +10,6 @@ class User(BaseModel, AbstractUser ):
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     country = models.CharField(max_length=100)
-    occupation = models.CharField(max_length=100, null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name"]
