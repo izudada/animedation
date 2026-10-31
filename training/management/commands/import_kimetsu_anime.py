@@ -1,6 +1,9 @@
+
 import json
 import time
 import requests
+
+from decimal import Decimal, InvalidOperation
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -11,6 +14,8 @@ from training.models import Anime
 
 class Command(BaseCommand):
     help = "Pull/import all anime data from Kitsu API"
+
+    RELATIONSHIPS = ("genres", "categories", "characters")
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -26,7 +31,10 @@ class Command(BaseCommand):
 
         self.stdout.write("Starting Kitsu anime API import")
 
-        url = "https://kitsu.io/api/edge/anime"
+        url = (
+            "https://kitsu.io/api/edge/anime"
+            "?include=genres,categories,characters"
+        )
 
         headers = {
             "Accept": "application/vnd.api+json",
@@ -45,6 +53,12 @@ class Command(BaseCommand):
                 response.raise_for_status()
 
                 result = response.json()
+
+                # Index included resources for quick lookup.
+                included = {
+                    (resource["type"], resource["id"]): resource
+                    for resource in result.get("included", [])
+                }
 
                 for item in result.get("data", []):
                     total_processed += 1
@@ -79,6 +93,18 @@ class Command(BaseCommand):
                         ),
                         "episode_count": attributes.get("episodeCount"),
                         "status": attributes.get("status") or "",
+
+                        # Relationship fields
+                        "genres": self.get_relationship(
+                            session, item, "genres", included
+                        ),
+                        "categories": self.get_relationship(
+                            session, item, "categories", included
+                        ),
+                        "characters": self.get_relationship(
+                            session, item, "characters", included
+                        ),
+
                         "raw_data": item,
                     }
 
@@ -119,12 +145,100 @@ class Command(BaseCommand):
                 )
             )
 
+    @classmethod
+    def get_relationship(cls, session, item, relationship, included):
+        """
+        Get related resources from the included response.
+        If they aren't included, fetch them using the relationship URL.
+        """
+        relationship_data = (
+            item.get("relationships", {})
+            .get(relationship, {})
+        )
+
+        resource_ids = relationship_data.get("data")
+
+        if resource_ids is not None:
+            resources = [
+                included.get((resource["type"], resource["id"]))
+                for resource in resource_ids
+            ]
+
+            resources = [resource for resource in resources if resource]
+
+            if len(resources) == len(resource_ids):
+                return [
+                    cls.normalize_resource(resource, relationship)
+                    for resource in resources
+                ]
+
+        # Fallback: fetch the relationship endpoint.
+        related_url = (
+            relationship_data.get("links", {}).get("related")
+        )
+
+        if not related_url:
+            return []
+
+        resources = []
+
+        while related_url:
+            response = session.get(related_url, timeout=30)
+            response.raise_for_status()
+
+            result = response.json()
+            resources.extend(result.get("data", []))
+
+            related_url = result.get("links", {}).get("next")
+
+            if related_url:
+                time.sleep(0.2)
+
+        return [
+            cls.normalize_resource(resource, relationship)
+            for resource in resources
+        ]
+
+    @staticmethod
+    def normalize_resource(resource, relationship):
+        """
+        Convert Kitsu resources into consistent JSON objects.
+        """
+        attributes = resource.get("attributes", {})
+
+        if relationship == "genres":
+            return {
+                "id": resource.get("id"),
+                "name": attributes.get("name") or "",
+            }
+
+        if relationship == "categories":
+            return {
+                "id": resource.get("id"),
+                "name": (
+                    attributes.get("title")
+                    or attributes.get("name")
+                    or ""
+                ),
+                "description": attributes.get("description") or "",
+            }
+
+        if relationship == "characters":
+            return {
+                "id": resource.get("id"),
+                "name": attributes.get("name") or "",
+                "description": attributes.get("description") or "",
+                "image": (
+                    (attributes.get("image") or {}).get("original", "")
+                ),
+            }
+
+        return attributes
+
     @staticmethod
     def to_decimal(value):
         if value in (None, ""):
             return None
-
-        from decimal import Decimal, InvalidOperation
 
         try:
             return Decimal(str(value))

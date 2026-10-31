@@ -8,8 +8,6 @@ class AnimeAdmin(admin.ModelAdmin):
         "id",
         "title",
         "average_rating",
-        "genres",
-        "categories",
         "start_date",
         "end_date",
         "created_at"
