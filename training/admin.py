@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from training.models import Anime
+from training.models import Anime, Character
 
 
 class AnimeAdmin(admin.ModelAdmin):
@@ -18,4 +18,21 @@ class AnimeAdmin(admin.ModelAdmin):
     ]
 
 
+class CharacterAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "name",
+        "slug",
+        "canonical_name",
+        "mal_id",
+        "created_at"
+    ]
+    search_fields = [
+        "id",
+        "name",
+        "mal_id"
+    ]
+
+
 admin.site.register(Anime, AnimeAdmin)
+admin.site.register(Character, CharacterAdmin)
