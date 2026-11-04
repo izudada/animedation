@@ -21,6 +21,20 @@ The goal is to help anime fans discover their next favourite series based on wha
 
 Ultimately, this project will explore how fine-tuning a large language model (LLM) can make anime recommendations more relevant, contextual, and aligned with a user's specific interests.
 
+## Data Quality
+
+The initial Kitsu API import contains 22,534 anime records.
+
+A data quality assessment was performed to identify
+missing or incomplete fields, including synopses,
+genres, ratings, posters, and categories.
+
+The assessment informed how incomplete records are
+handled by the recommendation engine.
+
+See [Data Quality Assessment](docs/data-quality.md)
+for the validation results and implementation decisions.
+
 
 
 ## Important Resources
