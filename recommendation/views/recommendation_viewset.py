@@ -2,6 +2,7 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from helpers.utils import paginate_data
 from recommendation.serializers import RecommendationRequestSerializer
 from recommendation.services.general_service import GeneralRecommendationService
 
@@ -16,6 +17,13 @@ class GeneralRecommendationViewset(viewsets.ViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        result = GeneralRecommendationService.get_recommendations(data=serializer.validated_data)
+        recommendations = GeneralRecommendationService.get_recommendations(data=serializer.validated_data)
 
-        return Response(result, status=status.HTTP_200_OK)
+        if request.GET.get("paginate") == "false":
+            return Response(recommendations, status=status.HTTP_200_OK)
+
+        return paginate_data(
+            data=recommendations,
+            page=request.GET.get("page", 1),
+            page_size=request.GET.get("limit", 10),
+        )

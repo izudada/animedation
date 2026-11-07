@@ -34,10 +34,7 @@ class GenreService:
         source_genres = cls.extract_genre_ids(anime.genres)
 
         if not source_genres:
-            return {
-                "message": "No recommendations available for this anime.",
-                "recommendations": [],
-            }
+            return []
 
         candidates = cls.get_candidate_anime(
             exclude_anime_id=anime.id
