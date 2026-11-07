@@ -35,6 +35,8 @@ handled by the recommendation engine.
 See [Data Quality Assessment](docs/data-quality.md)
 for the validation results and implementation decisions.
 
+## Recommendation Algorithm
+
 
 
 ## Important Resources

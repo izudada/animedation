@@ -1,0 +1,21 @@
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from recommendation.serializers import RecommendationRequestSerializer
+from recommendation.services.general_service import GeneralRecommendationService
+
+
+class GeneralRecommendationViewset(viewsets.ViewSet):
+    """View for anime recommendations."""
+
+    def list(self, request):
+        """Endpoint for retrieving anime recommendations."""
+        serializer = RecommendationRequestSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        result = GeneralRecommendationService.get_recommendations(data=serializer.validated_data)
+
+        return Response(result, status=status.HTTP_200_OK)

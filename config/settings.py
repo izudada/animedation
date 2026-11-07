@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     'authentication',
     'training',
+    'recommendation',
 ]
 
 MIDDLEWARE = [
