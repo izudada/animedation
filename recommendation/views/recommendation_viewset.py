@@ -28,6 +28,5 @@ class GeneralRecommendationViewset(viewsets.ViewSet):
         return paginate_data(
             data=recommendations,
             page=request.GET.get("page", 1),
-            page_size=request.GET.get("limit", 10),
-            # serializer_class=AnimeRecommendationResponseSerializer
+            page_size=request.GET.get("limit", 10)
         )

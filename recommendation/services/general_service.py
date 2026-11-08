@@ -1,5 +1,9 @@
 from recommendation.enums import RecommendationType
-from recommendation.services import GenreService, RatingService
+from recommendation.services import (
+    GenreService, 
+    RatingService,
+    SynopsisService
+)
 from training.services import AnimeService
 
 
@@ -20,7 +24,9 @@ class GeneralRecommendationService:
 
         if recommendation_type == RecommendationType.GENRE:
             return GenreService.recommend(anime) 
-        if recommendation_type == RecommendationType.RATING:
+        elif recommendation_type == RecommendationType.RATING:
             return RatingService.recommend(anime)
+        elif recommendation_type == RecommendationType.SYNOPSIS:
+            return SynopsisService.recommend(anime)
         else:
             return []
