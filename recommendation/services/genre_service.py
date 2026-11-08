@@ -29,8 +29,6 @@ class GenreService:
 
     @classmethod
     def recommend(cls, anime):
-        limit = cls.RECOMMENDATION_LIMIT
-
         source_genres = cls.extract_genre_ids(anime.genres)
 
         if not source_genres:
@@ -55,12 +53,13 @@ class GenreService:
             if score > 0:
                 recommendations.append({
                     "anime": candidate.title,
-                    "score": score,
+                    "rating": candidate.average_rating,
+                    "genres": [genre["name"] for genre in candidate.genres],
                 })
 
         recommendations.sort(
-            key=lambda item: item["score"],
+            key=lambda item: float(item["rating"] or 0),
             reverse=True,
         )
 
-        return recommendations[:limit]
+        return recommendations

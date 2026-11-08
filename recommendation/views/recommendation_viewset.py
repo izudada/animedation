@@ -3,7 +3,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from helpers.utils import paginate_data
-from recommendation.serializers import RecommendationRequestSerializer
+from recommendation.serializers import (
+    AnimeRecommendationResponseSerializer,
+    RecommendationRequestSerializer
+)
 from recommendation.services.general_service import GeneralRecommendationService
 
 
@@ -26,4 +29,5 @@ class GeneralRecommendationViewset(viewsets.ViewSet):
             data=recommendations,
             page=request.GET.get("page", 1),
             page_size=request.GET.get("limit", 10),
+            # serializer_class=AnimeRecommendationResponseSerializer
         )

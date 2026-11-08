@@ -1,0 +1,2 @@
+from recommendation.services.genre_service import GenreService
+from recommendation.services.rating_service import RatingService
