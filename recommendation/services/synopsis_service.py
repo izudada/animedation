@@ -5,6 +5,8 @@ from training.services import AnimeService
 
 
 class SynopsisService:
+    SIMILARITY_THRESHOLD = 0.1
+
     @staticmethod
     def recommend(anime, limit=None):
         """
@@ -52,7 +54,7 @@ class SynopsisService:
         recommendations = []
 
         for candidate, score in zip(candidate_list, similarity_scores):
-            if score > 0:
+            if score > SynopsisService.SIMILARITY_THRESHOLD:
                 recommendations.append({
                     "id": candidate.id,
                     "anime": candidate.title,
