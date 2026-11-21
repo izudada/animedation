@@ -59,7 +59,5 @@ migrate:
 kitsu-health-check:
 	docker compose exec web python manage.py data_import_health_check
 
-COMMIT ?=
-
 import-kitsu-data:
 	docker compose exec web python manage.py import_kimetsu_anime $(if $(COMMIT),--commit $(COMMIT),)

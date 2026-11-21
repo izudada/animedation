@@ -1,3 +1,4 @@
+from helpers.cache_manager import CacheManager
 from recommendation.enums import RecommendationType
 from recommendation.services import (
     GenreService, 
@@ -8,6 +9,8 @@ from training.services import AnimeService
 
 
 class GeneralRecommendationService:
+    RECOMMENDATION_TTL = 86400 
+
     """Service for handling general recommendations."""
 
     @classmethod
@@ -18,15 +21,29 @@ class GeneralRecommendationService:
             raise_404=False
         ).first()
 
+        cache_key = f"recommendations:{recommendation_type}:{anime.id}"
+        cached_recommendations = CacheManager.retrieve_key(cache_key)
+
+        if cached_recommendations is not None:
+            return cached_recommendations
+
         if not anime:
             # TODO: call kitsu API to fetch anime details and save it to the database
             pass
 
         if recommendation_type == RecommendationType.GENRE:
-            return GenreService.recommend(anime) 
+            recommendation = GenreService.recommend(anime) 
         elif recommendation_type == RecommendationType.RATING:
-            return RatingService.recommend(anime)
+            recommendation = RatingService.recommend(anime)
         elif recommendation_type == RecommendationType.SYNOPSIS:
-            return SynopsisService.recommend(anime)
+            recommendation = SynopsisService.recommend(anime)
         else:
-            return []
+            recommendation = []
+
+        CacheManager.set_key(
+            key=cache_key,
+            value=recommendation,
+            timeout=cls.RECOMMENDATION_TTL
+        )
+
+        return recommendation
