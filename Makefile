@@ -14,38 +14,52 @@ help:
 	@echo "  lint       Run linting"
 
 build:
-	docker-compose build
+	docker compose build
 
 up:
-	docker-compose up
+	docker compose up
 
 up-d:
-	docker-compose up -d
+	docker compose up -d
 
 down:
-	docker-compose down
+	docker compose down
 
 shell:
-	docker-compose exec web python manage.py shell
+	docker compose exec web python manage.py shell
 
 migrations:
-	docker-compose exec web python manage.py makemigrations
+	docker compose exec web python manage.py makemigrations
 
 migrate:
-	docker-compose exec web python manage.py migrate
+	docker compose exec web python manage.py migrate
 
 createsuperuser:
-	docker-compose exec web python manage.py createsuperuser
+	docker compose exec web python manage.py createsuperuser
 
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 clean:
-	docker-compose down -v
+	docker compose down -v
 	docker system prune -f
 
 test:
-	docker-compose exec web python manage.py test
+	docker compose exec web python manage.py test
 
 lint:
-	docker-compose exec web flake8 . --max-line-length=88 --exclude=migrations
+	docker compose exec web flake8 . --max-line-length=88 --exclude=migrations
+
+migrations:
+	docker compose exec web python manage.py makemigrations
+
+migrate:
+	docker compose exec web python manage.py migrate
+
+kitsu-health-check:
+	docker compose exec web python manage.py data_import_health_check
+
+COMMIT ?=
+
+import-kitsu-data:
+	docker compose exec web python manage.py import_kimetsu_anime $(if $(COMMIT),--commit $(COMMIT),)

@@ -34,7 +34,7 @@ class Character(BaseModel, models.Model):
 
     description = models.TextField(blank=True)
 
-    image_url = models.URLField(blank=True)
+    image_url = models.URLField(blank=True, max_length=1000)
 
     def __str__(self):
         return self.name or self.external_id
@@ -77,8 +77,8 @@ class Anime(BaseModel, models.Model):
     )
 
     # Images
-    poster_image_url = models.URLField(blank=True)
-    cover_image_url = models.URLField(blank=True)
+    poster_image_url = models.URLField(blank=True, max_length=1000,)
+    cover_image_url = models.URLField(blank=True, max_length=1000,)
 
     # Dates
     start_date = models.DateField(null=True, blank=True)
