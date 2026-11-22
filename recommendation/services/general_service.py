@@ -42,7 +42,7 @@ class GeneralRecommendationService:
 
         CacheManager.set_key(
             key=cache_key,
-            value=recommendation,
+            data=recommendation,
             timeout=cls.RECOMMENDATION_TTL
         )
 

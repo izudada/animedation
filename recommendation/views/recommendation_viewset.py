@@ -2,6 +2,8 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from drf_spectacular.utils import extend_schema
+
 from helpers.utils import paginate_data
 from recommendation.serializers import (
     AnimeRecommendationResponseSerializer,
@@ -13,7 +15,22 @@ from recommendation.services.general_service import GeneralRecommendationService
 class GeneralRecommendationViewset(viewsets.ViewSet):
     """View for anime recommendations."""
 
-    def list(self, request):
+    @extend_schema(
+        description="Retrieve anime recommendations based on the provided criteria.",
+        summary="Get Anime Recommendations",
+        tags=["Recommendation"],
+        request=RecommendationRequestSerializer,
+        responses={
+            200: AnimeRecommendationResponseSerializer(many=True),
+            400: None,
+        },
+    )
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="recommend",
+    )
+    def recommend(self, request):
         """Endpoint for retrieving anime recommendations."""
         serializer = RecommendationRequestSerializer(data=request.data)
 
