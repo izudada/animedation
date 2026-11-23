@@ -32,6 +32,7 @@ class GeneralRecommendationViewset(viewsets.ViewSet):
     )
     def recommend(self, request):
         """Endpoint for retrieving anime recommendations."""
+
         serializer = RecommendationRequestSerializer(data=request.data)
 
         if not serializer.is_valid():

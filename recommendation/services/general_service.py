@@ -1,4 +1,7 @@
+from django.conf import settings
+
 from helpers.cache_manager import CacheManager
+from helpers.custom_logger import CustomLogging
 from recommendation.enums import RecommendationType
 from recommendation.services import (
     GenreService, 
@@ -16,8 +19,9 @@ class GeneralRecommendationService:
     @classmethod
     def get_recommendations(cls, data):
         recommendation_type = data.get("recommendation_type") 
+        anime_title = data.get("anime_title")
         anime = AnimeService.get_anime_qs_by_title(
-            title=data.get("anime_title"),
+            title=anime_title,
             raise_404=False
         ).first()
 
@@ -31,6 +35,8 @@ class GeneralRecommendationService:
             # TODO: call kitsu API to fetch anime details and save it to the database
             pass
 
+        recommendation = []
+
         if recommendation_type == RecommendationType.GENRE:
             recommendation = GenreService.recommend(anime) 
         elif recommendation_type == RecommendationType.RATING:
@@ -38,8 +44,13 @@ class GeneralRecommendationService:
         elif recommendation_type == RecommendationType.SYNOPSIS:
             recommendation = SynopsisService.recommend(anime)
         else:
-            recommendation = []
-
+            CustomLogging.error(
+                message=f"failed to get recommendations for anime: {anime_title}. Invalid recommendation type: {recommendation_type}",
+                extra={"anime_title": anime_title, "recommendation_type": recommendation_type},
+                send_notification=True
+            )
+            return recommendation
+        
         CacheManager.set_key(
             key=cache_key,
             data=recommendation,

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'drf_spectacular',
+    'drf_api_logger',
 
     'authentication',
     'training',
@@ -65,6 +66,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -187,3 +190,35 @@ CACHES = {
         "TIMEOUT": 300,
     }
 }
+
+# DRF API Logger Configuration
+
+DRF_API_LOGGER_DATABASE = True
+
+DRF_API_LOGGER_SIGNAL = True
+
+DRF_API_LOGGER_EXCLUDE_KEYS = [
+    "password",
+    "token",
+    "access",
+    "refresh",
+    "secret",
+    "api_key",
+    "client_secret",
+]
+
+# Maximum request and response body sizes
+DRF_API_LOGGER_MAX_REQUEST_BODY_SIZE = 32768
+DRF_API_LOGGER_MAX_RESPONSE_BODY_SIZE = 65536
+
+# Flag APIs taking longer than 2 seconds
+DRF_API_LOGGER_SLOW_API_ABOVE = 2000
+
+TELEGRAM_BOT_TOKEN=config("TELEGRAM_BOT_TOKEN", default="", cast=str)
+TELEGRAM_CHAT_ID=config("TELEGRAM_CHAT_ID", default="", cast=int)
+
+LOGGER_CLIENT=config(
+    "LOGGER_CLIENT", 
+    default="integrations.services.telegram.TelegramClient", 
+    cast=str
+)
