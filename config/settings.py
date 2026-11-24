@@ -207,6 +207,17 @@ DRF_API_LOGGER_EXCLUDE_KEYS = [
     "client_secret",
 ]
 
+# celery configuration
+CELERY_BROKER_URL = config(
+    "CELERY_BROKER_URL",
+    default="redis://redis:6379/1",
+)
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "Africa/Lagos"
+
 # Maximum request and response body sizes
 DRF_API_LOGGER_MAX_REQUEST_BODY_SIZE = 32768
 DRF_API_LOGGER_MAX_RESPONSE_BODY_SIZE = 65536

@@ -4,6 +4,8 @@ import logging
 from django.conf import settings
 from django.utils.module_loading import import_string
 
+from recommendation.tasks import send_log_notification
+
 
 class CustomLogging:
 
@@ -17,8 +19,7 @@ class CustomLogging:
         logging.error(message, extra={"context": extra, "payload": payload})
 
         if send_notification:
-            client = cls._get_client()
-            client.send_message(
+            send_log_notification.delay(
                 message=f"ERROR: {message}\nExtra: {extra}\nPayload: {payload}"
             )
 
@@ -27,8 +28,7 @@ class CustomLogging:
         logging.warning(message, extra={"context": extra})
 
         if send_notification:
-            client = cls._get_client()
-            client.send_message(
+            send_log_notification.delay(
                 message=f"WARNING: {message}\nExtra: {extra}"
             )
 
@@ -37,8 +37,7 @@ class CustomLogging:
         logging.info(message, extra={"context": extra})
 
         if send_notification:
-            client = cls._get_client()
-            client.send_message(
+            send_log_notification.delay(
                 message=f"INFO: {message}\nExtra: {extra}"
             )
 
@@ -50,7 +49,6 @@ class CustomLogging:
         )
 
         if send_notification:
-            client = cls._get_client()
-            client.send_message(
+            send_log_notification.delay(
                 message=f"CRITICAL: {message}\nExtra: {extra}\nPayload: {payload}"
             )

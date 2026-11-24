@@ -44,7 +44,7 @@ class GeneralRecommendationService:
         elif recommendation_type == RecommendationType.SYNOPSIS:
             recommendation = SynopsisService.recommend(anime)
         else:
-            CustomLogging.error(
+            CustomLogging.info(
                 message=f"failed to get recommendations for anime: {anime_title}. Invalid recommendation type: {recommendation_type}",
                 extra={"anime_title": anime_title, "recommendation_type": recommendation_type},
                 send_notification=True

@@ -43,5 +43,17 @@ services:
       timeout: 3s
       retries: 5
 
+  celery:
+    build: .
+    container_name: anime_celery
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
+
 volumes:
   postgres_data:
