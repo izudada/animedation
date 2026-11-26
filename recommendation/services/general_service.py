@@ -6,7 +6,8 @@ from recommendation.enums import RecommendationType
 from recommendation.services import (
     GenreService, 
     RatingService,
-    SynopsisService
+    SemanticSynopsisService,
+    SynopsisService,
 )
 from training.services import AnimeService
 
@@ -43,6 +44,8 @@ class GeneralRecommendationService:
             recommendation = RatingService.recommend(anime)
         elif recommendation_type == RecommendationType.SYNOPSIS:
             recommendation = SynopsisService.recommend(anime)
+        elif recommendation_type == RecommendationType.SEMANTIC:
+            recommendation = SemanticSynopsisService.recommend(anime)
         else:
             CustomLogging.info(
                 message=f"failed to get recommendations for anime: {anime_title}. Invalid recommendation type: {recommendation_type}",

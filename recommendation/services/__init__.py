@@ -2,3 +2,4 @@ from recommendation.services.genre_service import GenreService
 from recommendation.services.rating_service import RatingService
 from recommendation.services.synopsis_service import SynopsisService
 from recommendation.services.general_service import GeneralRecommendationService
+from recommendation.services.semantic_service import SemanticSynopsisService

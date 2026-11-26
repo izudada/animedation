@@ -61,3 +61,6 @@ kitsu-health-check:
 
 import-kitsu-data:
 	docker compose exec web python manage.py import_kimetsu_anime $(if $(COMMIT),--commit $(COMMIT),)
+
+generate-embeddings:
+	docker compose exec web python manage.py generate_embeddings $(if $(COMMIT),--commit $(COMMIT),)	

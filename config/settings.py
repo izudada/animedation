@@ -233,3 +233,5 @@ LOGGER_CLIENT=config(
     default="integrations.services.telegram.TelegramClient", 
     cast=str
 )
+
+HF_TOKEN = config("HF_TOKEN", default="", cast=str)

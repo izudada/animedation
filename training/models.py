@@ -59,6 +59,11 @@ class Anime(BaseModel, models.Model):
     # General information
     synopsis = models.TextField(blank=True)
 
+    synopsis_embedding = models.JSONField(
+        default=list,
+        blank=True,
+    )
+
     average_rating = models.DecimalField(
         max_digits=5,
         decimal_places=2,
